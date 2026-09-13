@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campusly | Student Records</title>
+  <style>
+    
+    :root {
+      --ink: #152339;
+      --muted: #718096;
+      --line: #e8edf4;
+      --bg: #f7f9fc;
+      --white: #fff;
+      --navy: #14253f;
+      --blue: #2764df;
+      --blue-soft: #edf3ff;
+      --green: #178a67;
+      --green-soft: #e8f7f1;
+      --orange: #d27a18;
+      --orange-soft: #fff4e3;
+      --red: #d84949;
+      --shadow: 0 12px 32px rgba(24, 43, 75, .08);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .app { display: none; min-height: 100vh; } .app.authenticated { display: flex; }
+    .login-screen { align-items: center; background: var(--bg); display: flex; justify-content: center; min-height: 100vh; padding: 20px; } .login-card { background: var(--white); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); max-width: 420px; padding: 34px; width: 100%; } .login-brand { color: var(--navy); font-size: 25px; font-weight: 800; margin-bottom: 8px; } .login-brand span { color: var(--blue); } .login-card h1 { font-size: 22px; margin: 0 0 5px; } .login-card p { color: var(--muted); margin: 0 0 22px; } .login-card form { padding: 0; } .login-error { color: var(--red); display: none; font-size: 12px; margin-top: 12px; } .login-error.show { display: block; } .demo-note { background: var(--blue-soft); border-radius: 6px; color: #4e6590; font-size: 12px; margin-top: 17px; padding: 10px 12px; } .logout { background: #fff; border: 1px solid var(--line); border-radius: 6px; color: #526176; padding: 7px 10px; }
+    aside { width: 238px; background: var(--navy); color: #dce5f4; padding: 25px 16px; display: flex; flex-direction: column; }
+    .brand { color: #fff; font-weight: 800; font-size: 21px; letter-spacing: -.6px; padding: 0 13px 37px; }
+    .brand span { color: #6f9aff; }
+    .nav-label { color: #8292ac; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; margin: 0 13px 12px; text-transform: uppercase; }
+    nav { display: grid; gap: 5px; }
+    nav button { background: transparent; border: 0; border-radius: 8px; color: #b4c1d4; padding: 11px 13px; text-align: left; transition: .2s; }
+    nav button.active, nav button:hover { background: #233758; color: #fff; }
+    nav button span { display: inline-block; margin-right: 11px; width: 18px; opacity: .9; }
+    .side-bottom { border-top: 1px solid #2c3d5a; margin-top: auto; padding: 19px 13px 0; color: #9aabc3; font-size: 12px; }
+    .user { display: flex; align-items: center; gap: 9px; margin-top: 13px; color: #e1e8f3; font-size: 13px; }
+    .avatar { align-items: center; background: #dbe7ff; border-radius: 50%; color: #2558c5; display: inline-flex; font-size: 11px; font-weight: 700; height: 29px; justify-content: center; width: 29px; }
+    main { flex: 1; min-width: 0; }
+    header { align-items: center; background: var(--white); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; padding: 18px 37px; }
+    .crumb { color: var(--muted); font-size: 12px; } .crumb b { color: var(--ink); }
+    .header-right { align-items: center; display: flex; gap: 20px; }
+    .bell { color: #75849a; font-size: 20px; position: relative; }
+    .bell:after { background: #e35a55; border: 2px solid #fff; border-radius: 50%; content: ""; height: 6px; position: absolute; right: -2px; top: 1px; width: 6px; }
+    .profile { align-items: center; display: flex; gap: 9px; }
+    .profile small { color: var(--muted); display: block; font-size: 11px; }
+    .content { margin: 0 auto; max-width: 1420px; padding: 35px 37px 60px; }
+    .page-title { align-items: end; display: flex; justify-content: space-between; margin-bottom: 26px; }
+    h1 { font-size: 27px; letter-spacing: -.8px; margin: 0 0 4px; } .subtitle { color: var(--muted); }
+    .primary { background: var(--blue); border: 0; border-radius: 7px; color: #fff; font-weight: 700; padding: 11px 16px; box-shadow: 0 5px 12px rgba(39, 100, 223, .2); }
+    .primary:hover { background: #1f52be; }
+    .stats { display: grid; gap: 17px; grid-template-columns: repeat(4, 1fr); margin-bottom: 26px; }
+    .stat { background: var(--white); border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; }
+    .stat-top { align-items: center; color: var(--muted); display: flex; font-size: 12px; justify-content: space-between; }
+    .stat-icon { align-items: center; background: var(--blue-soft); border-radius: 7px; color: var(--blue); display: flex; font-size: 17px; height: 32px; justify-content: center; width: 32px; }
+    .stat:nth-child(2) .stat-icon { background: var(--green-soft); color: var(--green); } .stat:nth-child(3) .stat-icon { background: var(--orange-soft); color: var(--orange); } .stat:nth-child(4) .stat-icon { background: #f3ecff; color: #8751cf; }
+    .stat strong { display: block; font-size: 24px; letter-spacing: -.5px; margin-top: 12px; } .stat small { color: var(--green); font-size: 11px; }
+    .panel { background: var(--white); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 3px 12px rgba(28, 45, 76, .025); }
+    .toolbar { align-items: center; border-bottom: 1px solid var(--line); display: flex; gap: 11px; justify-content: space-between; padding: 17px 19px; }
+    .toolbar h2 { font-size: 16px; margin: 0 15px 0 0; } .toolbar-left { align-items: center; display: flex; }
+    .search { border: 1px solid var(--line); border-radius: 6px; color: var(--ink); min-width: 245px; padding: 9px 11px 9px 34px; }
+    .search-wrap { position: relative; } .search-wrap:before { color: #8794a8; content: "⌕"; font-size: 21px; left: 11px; position: absolute; top: 3px; }
+    select { background: #fff; border: 1px solid var(--line); border-radius: 6px; color: #536277; padding: 9px 28px 9px 10px; }
+    .export { background: #fff; border: 1px solid var(--line); border-radius: 6px; color: #526176; padding: 9px 13px; }
+    .table-wrap { overflow-x: auto; } table { border-collapse: collapse; min-width: 780px; width: 100%; } th { color: #8895a8; font-size: 10px; font-weight: 700; letter-spacing: .8px; padding: 14px 19px; text-align: left; text-transform: uppercase; } td { border-top: 1px solid #f0f3f7; padding: 13px 19px; vertical-align: middle; } tbody tr:hover { background: #fbfcff; }
+    .student { align-items: center; display: flex; gap: 10px; } .student b { display: block; font-size: 13px; } .student small { color: var(--muted); font-size: 11px; }
+    .student .avatar { height: 34px; width: 34px; } .program { color: #57667c; font-size: 12px; } .year { color: #536176; font-size: 12px; }
+    .badge { border-radius: 20px; display: inline-block; font-size: 11px; font-weight: 700; padding: 4px 9px; } .badge.active { background: var(--green-soft); color: var(--green); } .badge.leave { background: var(--orange-soft); color: var(--orange); } .badge.inactive { background: #f0f2f5; color: #7b8797; }
+    .actions { display: flex; gap: 3px; } .actions button { background: transparent; border: 0; border-radius: 5px; color: #8290a3; font-size: 17px; padding: 5px 7px; } .actions button:hover { background: var(--blue-soft); color: var(--blue); } .actions .delete:hover { background: #fff0f0; color: var(--red); }
+    .empty { color: var(--muted); padding: 45px !important; text-align: center; }
+    .footer { align-items: center; color: var(--muted); display: flex; font-size: 12px; justify-content: space-between; padding: 15px 19px; } .pagination { display: flex; gap: 5px; } .pagination button { background: #fff; border: 1px solid var(--line); border-radius: 5px; color: #68778c; height: 28px; min-width: 29px; } .pagination button.current { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .modal-backdrop { align-items: center; background: rgba(13, 26, 47, .5); display: none; inset: 0; justify-content: center; padding: 20px; position: fixed; z-index: 5; } .modal-backdrop.open { display: flex; }
+    .modal { background: #fff; border-radius: 11px; box-shadow: var(--shadow); max-height: 90vh; max-width: 560px; overflow-y: auto; width: 100%; } .modal-head { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; padding: 20px 23px; } .modal h2 { font-size: 18px; margin: 0; } .close { background: none; border: 0; color: #8490a2; font-size: 23px; } form { padding: 21px 23px; } .form-grid { display: grid; gap: 15px; grid-template-columns: 1fr 1fr; } label { color: #56647a; display: block; font-size: 12px; font-weight: 600; } input, form select { border: 1px solid #dfe5ee; border-radius: 6px; color: var(--ink); display: block; margin-top: 6px; padding: 10px; width: 100%; } input:focus, select:focus { border-color: var(--blue); outline: 2px solid #dce7ff; } .full { grid-column: 1 / -1; } .form-actions { border-top: 1px solid var(--line); display: flex; gap: 9px; justify-content: flex-end; margin-top: 22px; padding-top: 17px; } .secondary { background: #fff; border: 1px solid var(--line); border-radius: 6px; color: #56647a; padding: 10px 15px; }
+    .toast { background: #172c4a; border-radius: 7px; bottom: 25px; box-shadow: var(--shadow); color: #fff; display: none; font-size: 13px; left: 50%; padding: 12px 18px; position: fixed; transform: translateX(-50%); z-index: 9; } .toast.show { display: block; }
+    .help-list details { border-bottom: 1px solid var(--line); padding: 18px 21px; } .help-list details:last-child { border-bottom: 0; } .help-list summary { cursor: pointer; font-weight: 700; } .help-list p { color: var(--muted); margin: 10px 0 0; }
+    .password-wrap { position: relative; } .password-wrap input { padding-right: 68px; } .password-toggle { background: transparent; border: 0; color: var(--blue); font-size: 12px; font-weight: 700; padding: 4px; position: absolute; right: 7px; top: 10px; }
+    @media (max-width: 900px) { aside { width: 75px; padding-left: 9px; padding-right: 9px; } .brand { font-size: 0; padding-left: 12px; } .brand span { font-size: 21px; } nav button { font-size: 0; text-align: center; } nav button span { font-size: 17px; margin: 0; } .nav-label, .side-bottom { display: none; } .content, header { padding-left: 22px; padding-right: 22px; } .stats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { header { padding: 14px 16px; } .profile div { display: none; } .content { padding: 25px 14px 45px; } .page-title { align-items: start; flex-direction: column; gap: 16px; } .stats { gap: 10px; } .stat { padding: 13px; } .toolbar { align-items: stretch; flex-direction: column; } .toolbar-left { flex-wrap: wrap; gap: 9px; } .toolbar h2 { width: 100%; } .search { min-width: 0; width: 100%; } .form-grid { grid-template-columns: 1fr; } .full { grid-column: auto; } }
+  </style>
+</head>
+<body>
+  <section class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-brand">campus<span>ly.</span></div>
+      <h1>Administrator login</h1>
+      <p>Sign in to manage students, courses and attendance.</p>
+      <form id="loginForm">
+        <label>Username<input id="loginUsername" autocomplete="username" required placeholder="Enter username"></label>
+        <label style="margin-top:15px">Password<div class="password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Enter password"><button class="password-toggle" id="passwordToggle" type="button" aria-controls="loginPassword" aria-label="Show password">Show</button></div></label>
+        <button class="primary" style="margin-top:20px;width:100%" type="submit">Sign in</button>
+        <div class="login-error" id="loginError">Incorrect username or password.</div>
+      </form>
+      <div class="demo-note">Demo login: <b>admin</b> / <b>Campusly@123</b></div>
+    </div>
+  </section>
+  <div class="app" id="app">
+    <aside>
+      <div class="brand">campus<span>ly.</span></div>
+      <div class="nav-label">Workspace</div>
+      <nav id="workspaceNav">
+        <button class="active" data-view="overview"><span>▦</span> Overview</button>
+        <button data-view="students"><span>♙</span> Students</button>
+        <button data-view="courses"><span>▤</span> Courses</button>
+        <button data-view="attendance"><span>◷</span> Attendance</button>
+      </nav>
+      <div class="nav-label" style="margin-top:30px">Manage</div>
+      <nav id="manageNav">
+        <button data-view="settings"><span>⚙</span> Settings</button>
+        <button data-view="help"><span>?</span> Help center</button>
+      </nav>
+      <div class="side-bottom">Academic year<br><b id="yearLabel" style="color:#e1e8f3">2024 / 2025</b><div class="user"><span class="avatar">SA</span><span>Sarah Adams<br><small>Administrator</small></span></div></div>
+    </aside>
+    <main>
+      <header><div class="crumb">Workspace / <b id="crumb">Overview</b></div><div class="header-right"><div class="bell">♧</div><div class="profile"><span class="avatar">SA</span><div><b>Sarah Adams</b><small>Administrator</small></div></div><button class="logout" id="logoutBtn">Log out</button></div></header>
+      <section class="content" id="content"></section>
+    </main>
+  </div>
+  <div class="modal-backdrop" id="modalBackdrop"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h2 id="modalTitle">Add student</h2><button class="close" id="closeModal" aria-label="Close">×</button></div><form id="studentForm"><div class="form-grid"><label>Full name<input id="name" required placeholder="e.g. Alex Morgan"></label><label>Email address<input id="email" type="email" required placeholder="alex@university.edu"></label><label>Program<select id="program" required><option value="">Choose program</option><option>Computer Science</option><option>Business Administration</option><option>Design &amp; Media</option><option>Engineering</option></select></label><label>Year<select id="studentYear" required><option>1st year</option><option>2nd year</option><option>3rd year</option><option>4th year</option></select></label><label>Joined date<input id="joined" type="date" required></label><label>Status<select id="status" required><option>Active</option><option>On leave</option><option>Inactive</option></select></label></div><div class="form-actions"><button type="button" class="secondary" id="cancelBtn">Cancel</button><button class="primary" type="submit">Save student</button></div></form></div></div>
+  <div class="toast" id="toast"></div>
+  <script src="database.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    const adminCredentials = { username: "admin", password: "Campusly@123" };
+    const initials = name => name.split(" ").map(part => part[0]).slice(0, 2).join("").toUpperCase();
+    const formatDate = date => new Date(date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    let currentView = "overview";
+    let editingId = null;
+    function showToast(message) { $("toast").textContent = message; $("toast").classList.add("show"); setTimeout(() => $("toast").classList.remove("show"), 2600); }
+    function stat(label, value, icon) { return `<div class="stat"><div class="stat-top">${label}<span class="stat-icon">${icon}</span></div><strong>${value}</strong></div>`; }
+    function studentRows(students, actions = true) { return students.length ? students.map(s => `<tr><td><div class="student"><span class="avatar">${initials(s.name)}</span><div><b>${s.name}</b><small>${s.email}</small></div></div></td><td class="program">${s.program}</td><td class="year">${s.year}</td><td class="year">${formatDate(s.joined)}</td><td><span class="badge ${s.status === "Active" ? "active" : s.status === "On leave" ? "leave" : "inactive"}">${s.status}</span></td><td>${actions ? `<div class="actions"><button title="Edit" onclick="editStudent(${s.id})">✎</button><button class="delete" title="Delete" onclick="deleteStudent(${s.id})">♲</button></div>` : ""}</td></tr>`).join("") : '<tr><td class="empty" colspan="6">No students match your search or filters.</td></tr>'; }
+    async function render(view = currentView) {
+      currentView = view; const { students, courses, attendance, settings } = await data(); $("crumb").textContent = view[0].toUpperCase() + view.slice(1);
+      document.querySelectorAll("nav button").forEach(button => button.classList.toggle("active", button.dataset.view === view));
+      $("yearLabel").textContent = settings.academicYear;
+      if (view === "overview") $("content").innerHTML = `<div class="page-title"><div><h1>Dashboard overview</h1><div class="subtitle">A quick look at your institution's academic activity.</div></div><button class="primary" onclick="render('students'); openModal()">＋ Add student</button></div><div class="stats">${stat("Total students", students.length, "♙")}${stat("Active students", students.filter(s => s.status === "Active").length, "✓")}${stat("Courses", courses.length, "▤")}${stat("Attendance today", `${attendance.filter(a => a.status === "Present").length}/${attendance.length}`, "◷")}</div><div class="panel"><div class="toolbar"><div class="toolbar-left"><h2>Recent students</h2></div><button class="export" onclick="render('students')">View all students</button></div><div class="table-wrap"><table><thead><tr><th>Student</th><th>Program</th><th>Year</th><th>Joined</th><th>Status</th><th></th></tr></thead><tbody>${studentRows(students.slice(0, 5), false)}</tbody></table></div></div>`;
+      if (view === "students") $("content").innerHTML = `<div class="page-title"><div><h1>Student records</h1><div class="subtitle">Manage your students and their academic information.</div></div><button class="primary" onclick="openModal()">＋ Add student</button></div><div class="stats">${stat("Total students", students.length, "♙")}${stat("Active students", students.filter(s => s.status === "Active").length, "✓")}${stat("On leave", students.filter(s => s.status === "On leave").length, "◷")}${stat("Graduating this year", students.filter(s => s.year === "4th year").length, "♧")}</div><div class="panel"><div class="toolbar"><div class="toolbar-left"><h2>All students</h2><div class="search-wrap"><input class="search" id="searchInput" placeholder="Search students..." aria-label="Search students"></div></div><div class="toolbar-left"><select id="programFilter"><option value="">All programs</option><option>Computer Science</option><option>Business Administration</option><option>Design &amp; Media</option><option>Engineering</option></select><select id="statusFilter"><option value="">All status</option><option>Active</option><option>On leave</option><option>Inactive</option></select><button class="export" id="exportBtn">⇩ Export</button></div></div><div class="table-wrap"><table><thead><tr><th>Student</th><th>Program</th><th>Year</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead><tbody id="studentBody">${studentRows(students)}</tbody></table></div><div class="footer"><span id="resultCount">Showing ${students.length} students</span></div></div>`;
+      if (view === "courses") $("content").innerHTML = `<div class="page-title"><div><h1>Courses</h1><div class="subtitle">Manage course offerings, schedules and instructors.</div></div><button class="primary" onclick="addCourse()">＋ Add course</button></div><div class="stats">${stat("Active courses", courses.length, "▤")}${stat("Total enrolments", courses.reduce((sum, c) => sum + Number(c.students), 0), "♙")}${stat("Instructors", new Set(courses.map(c => c.instructor)).size, "♧")}${stat("Academic year", settings.academicYear, "⚙")}</div><div class="panel"><div class="table-wrap"><table><thead><tr><th>Course</th><th>Instructor</th><th>Schedule</th><th>Enrolled</th><th>Actions</th></tr></thead><tbody>${courses.map(c => `<tr><td><b>${c.code}</b><br><span class="program">${c.name}</span></td><td>${c.instructor}</td><td class="year">${c.schedule}</td><td>${c.students} students</td><td><button class="export" onclick="deleteCourse(${c.id})">Remove</button></td></tr>`).join("")}</tbody></table></div></div>`;
+      if (view === "attendance") $("content").innerHTML = `<div class="page-title"><div><h1>Attendance</h1><div class="subtitle">Record attendance for ${formatDate(new Date().toISOString().slice(0, 10))}.</div></div><button class="primary" onclick="saveAttendance()">Save attendance</button></div><div class="stats">${stat("Present", attendance.filter(a => a.status === "Present").length, "✓")}${stat("Absent", attendance.filter(a => a.status === "Absent").length, "×")}${stat("Late", attendance.filter(a => a.status === "Late").length, "◷")}${stat("Attendance rate", attendance.length ? Math.round(attendance.filter(a => a.status === "Present").length / attendance.length * 100) + "%" : "0%", "↗")}</div><div class="panel"><div class="table-wrap"><table><thead><tr><th>Student</th><th>Program</th><th>Status</th></tr></thead><tbody>${students.filter(s => s.status !== "Inactive").map(s => { const record = attendance.find(a => a.studentId === s.id) || { status: "Present" }; return `<tr><td><div class="student"><span class="avatar">${initials(s.name)}</span><b>${s.name}</b></div></td><td class="program">${s.program}</td><td><select class="attendance-status" data-id="${s.id}"><option ${record.status === "Present" ? "selected" : ""}>Present</option><option ${record.status === "Absent" ? "selected" : ""}>Absent</option><option ${record.status === "Late" ? "selected" : ""}>Late</option></select></td></tr>`; }).join("")}</tbody></table></div></div>`;
+      if (view === "settings") $("content").innerHTML = `<div class="page-title"><div><h1>Settings</h1><div class="subtitle">Configure your institution profile and academic year.</div></div></div><div class="panel"><form id="settingsForm"><div class="form-grid"><label>Institution name<input id="institution" value="${settings.institution}" required></label><label>Academic year<input id="academicYear" value="${settings.academicYear}" required></label><label class="full">Administrator email<input id="adminEmail" type="email" value="${settings.email}" required></label></div><div class="form-actions"><button class="primary">Save settings</button></div></form></div>`;
+      if (view === "help") $("content").innerHTML = `<div class="page-title"><div><h1>Help center</h1><div class="subtitle">Find answers and get the most from Campusly.</div></div></div><div class="panel help-list"><details open><summary>How is my data stored?</summary><p>Your records are stored in this browser using IndexedDB. A local storage fallback keeps the app usable in older browsers.</p></details><details><summary>How do I add a student?</summary><p>Open Students from the sidebar, select Add student, complete the form, then save the record.</p></details><details><summary>How do I record attendance?</summary><p>Open Attendance, choose Present, Absent or Late for each student, then select Save attendance.</p></details><details><summary>Need more help?</summary><p>Email the administrator at ${settings.email} and include the page where you need assistance.</p></details></div>`;
+      if (view === "students") bindStudentControls(students);
+      if (view === "settings") $("settingsForm").onsubmit = async event => { event.preventDefault(); await write("settings", [{ id: 1, institution: $("institution").value.trim(), academicYear: $("academicYear").value.trim(), email: $("adminEmail").value.trim() }]); showToast("Settings saved"); render("settings"); };
+    }
+    function bindStudentControls(students) { const update = () => { const search = $("searchInput").value.toLowerCase().trim(), program = $("programFilter").value, status = $("statusFilter").value; const rows = students.filter(s => (!search || `${s.name} ${s.email} ${s.program}`.toLowerCase().includes(search)) && (!program || s.program === program) && (!status || s.status === status)); $("studentBody").innerHTML = studentRows(rows); $("resultCount").textContent = `Showing ${rows.length} of ${students.length} students`; }; ["searchInput", "programFilter", "statusFilter"].forEach(id => $(id).addEventListener("input", update)); $("exportBtn").onclick = () => { const csv = ["Name,Email,Program,Year,Joined,Status", ...students.map(s => [s.name, s.email, s.program, s.year, s.joined, s.status].map(value => `"${value.replaceAll('"', '""')}"`).join(","))].join("\n"); const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); link.download = "student-records.csv"; link.click(); URL.revokeObjectURL(link.href); showToast("Student records exported"); }; }
+    function openModal(student) { editingId = student ? student.id : null; $("modalTitle").textContent = student ? "Edit student" : "Add student"; $("studentForm").reset(); if (student) { ["name", "email", "program", "studentYear", "joined", "status"].forEach(key => $(key).value = student[key === "studentYear" ? "year" : key]); } else $("joined").value = new Date().toISOString().slice(0, 10); $("modalBackdrop").classList.add("open"); $("name").focus(); }
+    function closeModal() { $("modalBackdrop").classList.remove("open"); editingId = null; }
+    window.editStudent = async id => { const { students } = await data(); openModal(students.find(s => s.id === id)); };
+    window.deleteStudent = async id => { const { students } = await data(); const student = students.find(s => s.id === id); if (student && confirm(`Delete ${student.name}'s record?`)) { await write("students", students.filter(s => s.id !== id)); await render("students"); showToast("Student record deleted"); } };
+    window.deleteCourse = async id => { const { courses } = await data(); if (confirm("Remove this course?")) { await write("courses", courses.filter(course => course.id !== id)); await render("courses"); showToast("Course removed"); } };
+    window.addCourse = async () => { const name = prompt("Course name"); if (!name) return; const code = prompt("Course code", name.slice(0, 4).toUpperCase()); const instructor = prompt("Instructor"); if (!code || !instructor) return; const { courses } = await data(); await write("courses", [...courses, { id: Date.now(), code, name, instructor, schedule: "Schedule to be announced", students: 0 }]); await render("courses"); showToast("Course added"); };
+    window.saveAttendance = async () => { const { attendance } = await data(); const today = new Date().toISOString().slice(0, 10); const updates = [...document.querySelectorAll(".attendance-status")].map(select => ({ id: Number(select.dataset.id), studentId: Number(select.dataset.id), date: today, status: select.value })); await write("attendance", [...attendance.filter(record => record.date !== today), ...updates]); await render("attendance"); showToast("Attendance saved"); };
+    $("closeModal").onclick = closeModal; $("cancelBtn").onclick = closeModal; $("modalBackdrop").onclick = event => { if (event.target === $("modalBackdrop")) closeModal(); };
+    $("studentForm").onsubmit = async event => { event.preventDefault(); const { students } = await data(); const record = { id: editingId || Date.now(), name: $("name").value.trim(), email: $("email").value.trim(), program: $("program").value, year: $("studentYear").value, joined: $("joined").value, status: $("status").value }; await write("students", editingId ? students.map(student => student.id === editingId ? record : student) : [record, ...students]); closeModal(); await render("students"); showToast(editingId ? "Student record updated" : "Student added successfully"); };
+    document.querySelectorAll("nav button").forEach(button => button.onclick = () => render(button.dataset.view));
+    function showApp() { $("loginScreen").style.display = "none"; $("app").classList.add("authenticated"); render(); }
+    $("loginForm").onsubmit = event => { event.preventDefault(); const valid = $("loginUsername").value.trim() === adminCredentials.username && $("loginPassword").value === adminCredentials.password; if (!valid) { $("loginError").classList.add("show"); return; } sessionStorage.setItem("campusly-admin-session", "authenticated"); $("loginError").classList.remove("show"); showApp(); };
+    $("passwordToggle").onclick = () => { const password = $("loginPassword"); const visible = password.type === "text"; password.type = visible ? "password" : "text"; $("passwordToggle").textContent = visible ? "Show" : "Hide"; $("passwordToggle").setAttribute("aria-label", visible ? "Show password" : "Hide password"); };
+    $("logoutBtn").onclick = () => { sessionStorage.removeItem("campusly-admin-session"); $("app").classList.remove("authenticated"); $("loginScreen").style.display = "flex"; $("loginForm").reset(); $("loginUsername").focus(); };
+    if (sessionStorage.getItem("campusly-admin-session") === "authenticated") showApp(); else $("loginUsername").focus();
+  </script>
+</body>
+</html>
